@@ -1,0 +1,24 @@
+{
+  "name": "bdsd.client",
+  "version": "1.0.0",
+  "description": "JS Client for bdsd.sock",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shabunin/bdsd.client.git"
+  },
+  "keywords": [
+    "bobaos",
+    "baos",
+    "knx"
+  ],
+  "author": "Vladimir Shabunin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shabunin/bdsd.client/issues"
+  },
+  "homepage": "https://github.com/shabunin/bdsd.client#readme"
+}
