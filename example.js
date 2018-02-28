@@ -2,17 +2,15 @@ const BdsdClient = require('./index');
 
 let myClient = BdsdClient();
 myClient.on('value', data => {
-  console.log('broadcasted valeu', data);
+  console.log('broadcasted value', data);
 });
 
-const a = function () {
-
-};
 myClient.on('connect', _ => {
   console.log('connected meow!');
+  myClient.readValue(204);
   myClient
-    .setValue(31, 257)
-    .then(a)
-    .catch(a);
+    .getValue(204)
+    .then(console.log)
+    .catch(console.log);
 });
 
