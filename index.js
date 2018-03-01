@@ -14,14 +14,12 @@ const Client = function (socketFile) {
   socket.on('connect', _ => {
     const frameParser = new FrameParser();
     frameParser.on('data', data => {
-      //console.log('got data from socket', data.toString());
       try {
         const dataObject = JSON.parse(data.toString());
         const method = dataObject.method;
-        const payload = dataObject.payload;
         switch (method) {
           case 'notify':
-            switch (payload) {
+            switch (dataObject.payload) {
               case 'bus connected':
                 self.emit('connect');
                 break;
@@ -33,7 +31,7 @@ const Client = function (socketFile) {
             }
             break;
           case 'cast value':
-            self.emit('value', payload);
+            self.emit('value', dataObject.payload);
             break;
           default:
             if (Object.prototype.hasOwnProperty.call(dataObject, 'response_id')) {
@@ -42,11 +40,10 @@ const Client = function (socketFile) {
               let requestIndex = self._requests.findIndex(findByResponseId);
               if (requestIndex >= 0) {
                 // check success true/false then resolve/reject
-                console.log('Response: ```' + data + '```.');
                 if (dataObject.success) {
-                  self._requests[requestIndex].resolve(payload);
+                  self._requests[requestIndex].resolve(dataObject.payload);
                 } else {
-                  self._requests[requestIndex].reject(dataObject.error);
+                  self._requests[requestIndex].reject(new Error(dataObject.error));
                 }
                 // delete request from list
                 self._requests.splice(requestIndex, 1);
@@ -63,7 +60,6 @@ const Client = function (socketFile) {
   // now Client API
   self.getDatapoints = function () {
     return new Promise((resolve, reject) => {
-      // TODO: check id field undefined -> reject
       const request_id = Math.round(Math.random()*Date.now());
       const method = 'get datapoints';
       const data = {
@@ -76,7 +72,9 @@ const Client = function (socketFile) {
   };
   self.getDescription = function (id) {
     return new Promise((resolve, reject) => {
-      // TODO: check id field undefined -> reject
+      if (typeof id === "undefined") {
+        reject(new Error('Please specify datapoint id'));
+      }
       const request_id = Math.round(Math.random()*Date.now());
       const method = 'get description';
       const payload = {id: id};
@@ -89,9 +87,11 @@ const Client = function (socketFile) {
       self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
     });
   };
-  self.getValue = function (id) {
+  self.getValue = async function (id) {
     return new Promise((resolve, reject) => {
-      // TODO: check id field undefined -> reject
+      if (typeof id === "undefined") {
+        reject(new Error('Please specify datapoint id'));
+      }
       const request_id = Math.round(Math.random()*Date.now());
       const method = 'get value';
       const payload = {id: id};
@@ -106,8 +106,12 @@ const Client = function (socketFile) {
   };
   self.setValue = function (id, value) {
     return new Promise((resolve, reject) => {
-      // TODO: check id field undefined -> reject
-      // TODO: check value field, reject if undefined
+      if (typeof id === "undefined") {
+        reject(new Error('Please specify datapoint id'));
+      }
+      if (typeof value === "undefined") {
+        reject(new Error('Please specify datapoint value'));
+      }
       const request_id = Math.round(Math.random()*Date.now());
       const method = 'set value';
       const payload = {id: id, value: value};
@@ -122,7 +126,9 @@ const Client = function (socketFile) {
   };
   self.readValue = function (id) {
     return new Promise((resolve, reject) => {
-      // TODO: check id field undefined -> reject
+      if (typeof id === "undefined") {
+        reject(new Error('Please specify datapoint id'));
+      }
       const request_id = Math.round(Math.random()*Date.now());
       const method = 'read value';
       const payload = {id: id};
@@ -136,14 +142,9 @@ const Client = function (socketFile) {
     });
   };
   self._sendDataFrame = function (data) {
-    console.log('Request: ```' + data + '```');
     const frame = composeFrame(data);
     return socket.write(frame);
   };
-  // TODO: implement request-response Promise API
-  // TODO: implement events like 'notify', 'cast value'
-  // TODO: functions getDatapointValue, setDatapointValue
-
   return self;
 };
 
