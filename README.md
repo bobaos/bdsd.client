@@ -60,6 +60,11 @@ myClient.on('connect', _ => {
     .setValue(1, true)
     .then(console.log)
     .catch(console.log);
-  
+ 
+  // set programming mode to 1
+  myClient
+  .setProgrammingMode(1)
+  .then(console.log)
+  .catch(console.log);
 });
 ```
