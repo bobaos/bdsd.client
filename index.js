@@ -87,7 +87,7 @@ const Client = function (socketFile) {
       self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
     });
   };
-  self.getValue = async function (id) {
+  self.getValue = function (id) {
     return new Promise((resolve, reject) => {
       if (typeof id === "undefined") {
         reject(new Error('Please specify datapoint id'));
