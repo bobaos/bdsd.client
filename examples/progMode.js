@@ -1,4 +1,4 @@
-const BdsdClient = require('./index');
+const BdsdClient = require('../index');
 
 // BdsdClient function accepts socket filename as an argument.
 // If no argument provided then it will try to connect to following file:
