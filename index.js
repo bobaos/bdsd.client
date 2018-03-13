@@ -14,7 +14,6 @@ const Client = function (socketFile) {
   socket.on('connect', _ => {
     const frameParser = new FrameParser();
     frameParser.on('data', data => {
-      console.log(`Response: ${data}`);
       try {
         const dataObject = JSON.parse(data.toString());
         const method = dataObject.method;
@@ -155,7 +154,6 @@ const Client = function (socketFile) {
         method: method,
         payload: payload
       };
-      console.log(`Request: ${JSON.stringify(data)}`);
       self._sendDataFrame(JSON.stringify(data));
       self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
     });
