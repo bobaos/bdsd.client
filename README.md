@@ -68,3 +68,64 @@ myClient.on('connect', _ => {
   .catch(console.log);
 });
 ```
+
+All API is Promise-based. If request was successful then you will get payload as a parameter of callback function.
+
+For **getDatapoints** method you should receive array of all datapoints:
+
+```
+[ { id: 1,
+    length: 2,
+    flags:
+     { priority: 'low',
+       communication: true,
+       read: true,
+       write: true,
+       readOnInit: false,
+       transmit: true,
+       update: false },
+    dpt: 'dpt9' },
+  { id: 2,
+    length: 1,
+    flags:
+     { priority: 'low',
+       communication: true,
+       read: false,
+       write: true,
+       readOnInit: false,
+       transmit: true,
+       update: false },
+    dpt: 'dpt5' } ]
+```
+
+For **getDescription** you will receive description of specified datapoint
+
+```
+{ id: 1,
+  value:
+   { id: 1,
+     dpt: 'dpt9',
+     flags:
+      { priority: 'low',
+        communication: true,
+        read: true,
+        write: true,
+        readOnInit: false,
+        transmit: true,
+        update: false },
+     length: 2 } }
+```
+
+For **getValue** you will receive object with fields id and value
+
+```
+{ id: 1, value: 19.9 }
+```
+
+For **setValue/readValue** you will receive object with field id
+
+```
+{ id: 1}
+```
+
+**setProgramming mode** callback your function without data
