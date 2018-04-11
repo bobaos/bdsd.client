@@ -56,3 +56,8 @@ myClient.on('connect', _ => {
   //     })
   // }, 10000)
 });
+
+// error handling
+myClient.on('error', err =>  {
+  console.log(err.message);
+});

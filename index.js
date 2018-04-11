@@ -6,57 +6,85 @@ const EE = require('events').EventEmitter;
 const Client = function (socketFile) {
   let self = new EE();
   self._requests = [];
+  let socket;
   let SOCKETFILE = process.env['XDG_RUNTIME_DIR'] + '/bdsd.sock';
   if (typeof socketFile === 'string') {
     SOCKETFILE = socketFile;
   }
-  const socket = net.createConnection(SOCKETFILE);
-  socket.on('connect', _ => {
-    const frameParser = new FrameParser();
-    frameParser.on('data', data => {
-      try {
-        const dataObject = JSON.parse(data.toString());
-        const method = dataObject.method;
-        switch (method) {
-          case 'notify':
-            switch (dataObject.payload) {
-              case 'bus connected':
-                self.emit('connect');
-                break;
-              case 'bus disconnected':
-                self.emit('disconnect');
-                break;
-              default:
-                break;
-            }
-            break;
-          case 'cast value':
-            self.emit('value', dataObject.payload);
-            break;
-          default:
-            if (Object.prototype.hasOwnProperty.call(dataObject, 'response_id')) {
-              // find resolve, reject cb by response_id
-              const findByResponseId = t => t.request_id === dataObject.response_id;
-              let requestIndex = self._requests.findIndex(findByResponseId);
-              if (requestIndex >= 0) {
-                // check success true/false then resolve/reject
-                if (dataObject.success) {
-                  self._requests[requestIndex].resolve(dataObject.payload);
-                } else {
-                  self._requests[requestIndex].reject(new Error(dataObject.error));
-                }
-                // delete request from list
-                self._requests.splice(requestIndex, 1);
-              }
-            }
-            break;
-        }
-      } catch (e) {
-        console.log(e);
-      }
+  const tryToConnect = _ => {
+    // console.log('trying to connect to', SOCKETFILE);
+    // 10 seconds to reconnecting
+    const TIMEOUT = 10000;
+    socket = net.createConnection(SOCKETFILE);
+    socket.on('error', err => {
+      // console.log('error while trying to connect', err.message);
+      // clear all listeners
+      socket.removeAllListeners('connect')
+        .removeAllListeners('error')
+        .removeAllListeners('close');
+      self.emit('error', err);
+      // try to reconnect
+      setTimeout(tryToConnect, TIMEOUT);
     });
-    socket.pipe(frameParser);
-  });
+    socket.on('close', _ => {
+      // console.log('connection closed');
+      self.emit('close');
+      // clear all listeners
+      socket.removeAllListeners('connect')
+        .removeAllListeners('error')
+        .removeAllListeners('close');
+
+      // try to reconnect
+      setTimeout(tryToConnect, TIMEOUT);
+    });
+    socket.on('connect', _ => {
+      const frameParser = new FrameParser();
+      frameParser.on('data', data => {
+        try {
+          const dataObject = JSON.parse(data.toString());
+          const method = dataObject.method;
+          switch (method) {
+            case 'notify':
+              switch (dataObject.payload) {
+                case 'bus connected':
+                  self.emit('connect');
+                  break;
+                case 'bus disconnected':
+                  self.emit('disconnect');
+                  break;
+                default:
+                  break;
+              }
+              break;
+            case 'cast value':
+              self.emit('value', dataObject.payload);
+              break;
+            default:
+              if (Object.prototype.hasOwnProperty.call(dataObject, 'response_id')) {
+                // find resolve, reject cb by response_id
+                const findByResponseId = t => t.request_id === dataObject.response_id;
+                let requestIndex = self._requests.findIndex(findByResponseId);
+                if (requestIndex >= 0) {
+                  // check success true/false then resolve/reject
+                  if (dataObject.success) {
+                    self._requests[requestIndex].resolve(dataObject.payload);
+                  } else {
+                    self._requests[requestIndex].reject(new Error(dataObject.error));
+                  }
+                  // delete request from list
+                  self._requests.splice(requestIndex, 1);
+                }
+              }
+              break;
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      });
+      socket.pipe(frameParser);
+    });
+  };
+  tryToConnect();
   // now Client API
   self.getDatapoints = function () {
     return new Promise((resolve, reject) => {
