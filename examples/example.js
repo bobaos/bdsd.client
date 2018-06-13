@@ -16,12 +16,21 @@ myClient.on('value', data => {
 myClient.on('connect', _ => {
   console.log('client connected');
   myClient
-    .setValues([
-      {id: 999, value: 'hello, friend'},
-      {id: 999, value: 'hello, drug'}
-    ])
+    .readValues([1, 105, 106, 107, 108])
     .then(console.log)
     .catch(console.log);
+  
+  myClient
+    .readValue(1)
+    .then(console.log)
+    .catch(console.log);
+  // myClient
+  //   .setValues([
+  //     {id: 999, value: 'hello, friend'},
+  //     {id: 999, value: 'hello, drug'}
+  //   ])
+  //   .then(console.log)
+  //   .catch(console.log);
   // get list of all datapoints
   // myClient
   //   .getDatapoints()
@@ -36,7 +45,7 @@ myClient.on('connect', _ => {
   //
   // // get datapoint value
   myClient
-    .getStoredValue(1)
+    .getStoredValue(999)
     .then(console.log)
     .catch(console.log);
   //

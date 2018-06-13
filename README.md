@@ -14,7 +14,7 @@ In js file:
 ```js
 const BdsdClient = require('bdsd.client');
 
-// BdsdClient function accepts socket filename as an argument. 
+// BdsdClient function accepts socket filename as an argument.
 // If no argument provided then it will try to connect to following file:
 // process.env['XDG_RUNTIME_DIR'] + '/bdsd.sock'. Usually it is /run/user/1000/bdsd.sock.
 let myClient = BdsdClient();
@@ -63,15 +63,41 @@ myClient.on('connect', _ => {
  
   // set programming mode to 1
   myClient
-  .setProgrammingMode(1)
-  .then(console.log)
-  .catch(console.log);
+    .setProgrammingMode(1)
+    .then(console.log)
+    .catch(console.log);
+
+  // get stored value from bdsd.sock(avoid communication via serialport)
+  myClient
+    .getStoredValue(1)
+    .then(console.log)
+    .catch(console.log)
+
+  // read multiple values
+  myClient
+    .readValues([1, 2, 3])
+    .then(console.log)
+    .catch(console.log);
+
+  // set multiple values
+  myClient
+    .setValues([
+      { id: 1, value: true},
+      { id: 2, value: 1}
+    ])
+    .then(console.log)
+    .catch(console.log);
+});
+
+// error handling
+myClient.on('error', err =>  {
+  console.log(err.message);
 });
 ```
 
 All API is Promise-based. If request was successful then you will get payload as a parameter of callback function.
 
-For **getDatapoints** method you should receive array of all datapoints:
+For **`getDatapoints`** method you should receive array of all datapoints:
 
 ```
 [ { id: 1,
@@ -98,7 +124,7 @@ For **getDatapoints** method you should receive array of all datapoints:
     dpt: 'dpt5' } ]
 ```
 
-For **getDescription** you will receive description of specified datapoint
+For **`getDescription`** you will receive description of specified datapoint
 
 ```
 { id: 1,
@@ -116,16 +142,24 @@ For **getDescription** you will receive description of specified datapoint
      length: 2 } }
 ```
 
-For **getValue** you will receive object with fields id and value
+For **`getValue/getStoredValue`** you will receive object with fields id and value
 
 ```
-{ id: 1, value: 19.9 }
+{ id: 999,
+  value: 'Hello, friend',
+  raw:
+   { type: 'Buffer',
+     data: [ 72, 101, 108, 108, 111, 44, 32, 102, 114, 105, 101, 110, 100, 0 ] } }
 ```
 
-For **setValue/readValue** you will receive object with field id
+For **`setValue/readValue`** you will receive object with field id
 
 ```
 { id: 1}
 ```
 
-**setProgramming mode** callback your function without data
+**`setProgramming mode`** callback your function without data
+
+**`readValues`** accepts array of datapoints. It will send only one request to BAOS module and BAOS will send multiple read requests to KNX bus.
+
+**`setValues`** accepts array of objects: `[{id: 1, value: true}, {id: 2, value: 23.5}]`
