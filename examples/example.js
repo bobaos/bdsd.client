@@ -15,45 +15,51 @@ myClient.on('value', data => {
 // Triggers when client connects and receive 'bus connected' notification
 myClient.on('connect', _ => {
   console.log('client connected');
+
+  // get list of all datapoints
   myClient
-    .readValues([1, 105, 106, 107, 108])
+    .getDatapoints()
     .then(console.log)
     .catch(console.log);
-  
+
+  // get description for one dp
+  myClient
+    .getDescription(1)
+    .then(console.log)
+    .catch(console.log);
+
+  // get datapoint value
+  myClient
+    .getValue(1)
+    .then(console.log)
+    .catch(console.log);
+
+  // set datapoint value and send to bus
+  myClient
+    .setValue(1, true)
+    .then(console.log)
+    .catch(console.log);
+
+  // send read request to bus
   myClient
     .readValue(1)
     .then(console.log)
     .catch(console.log);
-  // myClient
-  //   .setValues([
-  //     {id: 999, value: 'hello, friend'},
-  //     {id: 999, value: 'hello, drug'}
-  //   ])
-  //   .then(console.log)
-  //   .catch(console.log);
-  // get list of all datapoints
-  // myClient
-  //   .getDatapoints()
-  //   .then(console.log)
-  //   .catch(console.log);
-  //
-  // // get description for one dp
-  // myClient
-  //   .getDescription(1)
-  //   .then(console.log)
-  //   .catch(console.log);
-  //
-  // // get datapoint value
+
+  // send multiple read requests to bus
   myClient
-    .getStoredValue(999)
+    .readValues([1, 105, 106, 107, 108])
     .then(console.log)
     .catch(console.log);
-  //
-  // // set datapoint value and send to bus
-  // myClient
-  //   .setValue(1, true)
-  //   .then(console.log)
-  //   .catch(console.log);
+
+  // set multiple values
+  myClient
+    .setValues([
+      {id: 1, value: false},
+      {id: 999, value: 'hello, drug'}
+    ])
+    .then(console.log)
+    .catch(console.log);
 
   // now set interval to test multiple script instances
   // setInterval(_ => {
