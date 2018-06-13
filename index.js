@@ -152,6 +152,22 @@ const Client = function (socketFile) {
       self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
     });
   };
+  self.setValues = function (values) {
+    return new Promise((resolve, reject) => {
+      if (typeof values === "undefined") {
+        reject(new Error('Please specify values to set'));
+      }
+      const request_id = Math.round(Math.random() * Date.now());
+      const method = 'set multiple';
+      const data = {
+        request_id: request_id,
+        method: method,
+        payload: values
+      };
+      self._sendDataFrame(JSON.stringify(data));
+      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+    });
+  };
   self.readValue = function (id) {
     return new Promise((resolve, reject) => {
       if (typeof id === "undefined") {
@@ -164,6 +180,22 @@ const Client = function (socketFile) {
         request_id: request_id,
         method: method,
         payload: payload
+      };
+      self._sendDataFrame(JSON.stringify(data));
+      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+    });
+  };
+  self.readValues = function (ids) {
+    return new Promise((resolve, reject) => {
+      if (typeof ids === "undefined") {
+        reject(new Error('Please specify datapoints to read'));
+      }
+      const request_id = Math.round(Math.random() * Date.now());
+      const method = 'read multiple';
+      const data = {
+        request_id: request_id,
+        method: method,
+        payload: ids
       };
       self._sendDataFrame(JSON.stringify(data));
       self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
