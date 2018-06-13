@@ -17,9 +17,8 @@ myClient.on('connect', _ => {
   console.log('client connected');
   myClient
     .setValues([
-      {id: 2, value: false},
-      {id: 1, value: 30},
-      {id: 999, value: 'hello, friend'}
+      {id: 999, value: 'hello, friend'},
+      {id: 999, value: 'hello, drug'}
     ])
     .then(console.log)
     .catch(console.log);
@@ -36,10 +35,10 @@ myClient.on('connect', _ => {
   //   .catch(console.log);
   //
   // // get datapoint value
-  // myClient
-  //   .getValue(1)
-  //   .then(console.log)
-  //   .catch(console.log);
+  myClient
+    .getStoredValue(1)
+    .then(console.log)
+    .catch(console.log);
   //
   // // set datapoint value and send to bus
   // myClient

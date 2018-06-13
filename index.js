@@ -132,6 +132,23 @@ const Client = function (socketFile) {
       self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
     });
   };
+  self.getStoredValue = function (id) {
+    return new Promise((resolve, reject) => {
+      if (typeof id === "undefined") {
+        reject(new Error('Please specify datapoint id'));
+      }
+      const request_id = Math.round(Math.random() * Date.now());
+      const method = 'get stored value';
+      const payload = {id: id};
+      const data = {
+        request_id: request_id,
+        method: method,
+        payload: payload
+      };
+      self._sendDataFrame(JSON.stringify(data));
+      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+    });
+  };
   self.setValue = function (id, value) {
     return new Promise((resolve, reject) => {
       if (typeof id === "undefined") {
