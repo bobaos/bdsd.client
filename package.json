@@ -1,6 +1,6 @@
 {
   "name": "bdsd.client",
-  "version": "2.0.10",
+  "version": "2.0.11",
   "description": "JS Client for bdsd.sock",
   "main": "index.js",
   "scripts": {
