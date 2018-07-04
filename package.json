@@ -1,6 +1,6 @@
 {
   "name": "bdsd.client",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "description": "JS Client for bdsd.sock",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,11 @@
     "type": "git",
     "url": "git+https://github.com/shabunin/bdsd.client.git"
   },
-  "keywords": ["bobaos", "baos", "knx"],
+  "keywords": [
+    "bobaos",
+    "baos",
+    "knx"
+  ],
   "author": "Vladimir Shabunin",
   "license": "DBAD",
   "bugs": {
