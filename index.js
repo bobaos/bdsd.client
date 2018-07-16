@@ -3,7 +3,7 @@ const FrameParser = require('./FrameHelpers/Parser');
 const {composeFrame} = require('./FrameHelpers/compose');
 const EE = require('events').EventEmitter;
 
-const Client = function (socketFile) {
+const Client = function(socketFile) {
   let self = new EE();
   self._requests = [];
   let socket;
@@ -19,7 +19,8 @@ const Client = function (socketFile) {
     socket.on('error', err => {
       // console.log('error while trying to connect', err.message);
       // clear all listeners
-      socket.removeAllListeners('connect')
+      socket
+        .removeAllListeners('connect')
         .removeAllListeners('error')
         .removeAllListeners('close');
       self.emit('error', err);
@@ -30,7 +31,8 @@ const Client = function (socketFile) {
       // console.log('connection closed');
       self.emit('close');
       // clear all listeners
-      socket.removeAllListeners('connect')
+      socket
+        .removeAllListeners('connect')
         .removeAllListeners('error')
         .removeAllListeners('close');
 
@@ -60,16 +62,21 @@ const Client = function (socketFile) {
               self.emit('value', dataObject.payload);
               break;
             default:
-              if (Object.prototype.hasOwnProperty.call(dataObject, 'response_id')) {
+              if (
+                Object.prototype.hasOwnProperty.call(dataObject, 'response_id')
+              ) {
                 // find resolve, reject cb by response_id
-                const findByResponseId = t => t.request_id === dataObject.response_id;
+                const findByResponseId = t =>
+                  t.request_id === dataObject.response_id;
                 let requestIndex = self._requests.findIndex(findByResponseId);
                 if (requestIndex >= 0) {
                   // check success true/false then resolve/reject
                   if (dataObject.success) {
                     self._requests[requestIndex].resolve(dataObject.payload);
                   } else {
-                    self._requests[requestIndex].reject(new Error(dataObject.error));
+                    self._requests[requestIndex].reject(
+                      new Error(dataObject.error)
+                    );
                   }
                   // delete request from list
                   self._requests.splice(requestIndex, 1);
@@ -86,21 +93,25 @@ const Client = function (socketFile) {
   };
   tryToConnect();
   // now Client API
-  self.getDatapoints = function () {
+  self.getDatapoints = function() {
     return new Promise((resolve, reject) => {
       const request_id = Math.round(Math.random() * Date.now());
       const method = 'get datapoints';
       const data = {
         request_id: request_id,
-        method: method,
+        method: method
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.getDescription = function (id) {
+  self.getDescription = function(id) {
     return new Promise((resolve, reject) => {
-      if (typeof id === "undefined") {
+      if (typeof id === 'undefined') {
         reject(new Error('Please specify datapoint id'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -112,12 +123,16 @@ const Client = function (socketFile) {
         payload: payload
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.getValue = function (id) {
+  self.getValue = function(id) {
     return new Promise((resolve, reject) => {
-      if (typeof id === "undefined") {
+      if (typeof id === 'undefined') {
         reject(new Error('Please specify datapoint id'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -129,12 +144,16 @@ const Client = function (socketFile) {
         payload: payload
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.getStoredValue = function (id) {
+  self.getStoredValue = function(id) {
     return new Promise((resolve, reject) => {
-      if (typeof id === "undefined") {
+      if (typeof id === 'undefined') {
         reject(new Error('Please specify datapoint id'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -146,15 +165,19 @@ const Client = function (socketFile) {
         payload: payload
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.setValue = function (id, value) {
+  self.setValue = function(id, value) {
     return new Promise((resolve, reject) => {
-      if (typeof id === "undefined") {
+      if (typeof id === 'undefined') {
         reject(new Error('Please specify datapoint id'));
       }
-      if (typeof value === "undefined") {
+      if (typeof value === 'undefined') {
         reject(new Error('Please specify datapoint value'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -166,12 +189,16 @@ const Client = function (socketFile) {
         payload: payload
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.setValues = function (values) {
+  self.setValues = function(values) {
     return new Promise((resolve, reject) => {
-      if (typeof values === "undefined") {
+      if (typeof values === 'undefined') {
         reject(new Error('Please specify values to set'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -182,12 +209,16 @@ const Client = function (socketFile) {
         payload: values
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.readValue = function (id) {
+  self.readValue = function(id) {
     return new Promise((resolve, reject) => {
-      if (typeof id === "undefined") {
+      if (typeof id === 'undefined') {
         reject(new Error('Please specify datapoint id'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -199,12 +230,16 @@ const Client = function (socketFile) {
         payload: payload
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.readValues = function (ids) {
+  self.readValues = function(ids) {
     return new Promise((resolve, reject) => {
-      if (typeof ids === "undefined") {
+      if (typeof ids === 'undefined') {
         reject(new Error('Please specify datapoints to read'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -215,12 +250,16 @@ const Client = function (socketFile) {
         payload: ids
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self.setProgrammingMode = function (value) {
+  self.setProgrammingMode = function(value) {
     return new Promise((resolve, reject) => {
-      if (typeof value === "undefined") {
+      if (typeof value === 'undefined') {
         reject(new Error('Please specify mode value'));
       }
       const request_id = Math.round(Math.random() * Date.now());
@@ -232,15 +271,23 @@ const Client = function (socketFile) {
         payload: payload
       };
       self._sendDataFrame(JSON.stringify(data));
-      self._requests.push({request_id: request_id, resolve: resolve, reject: reject});
+      self._requests.push({
+        request_id: request_id,
+        resolve: resolve,
+        reject: reject
+      });
     });
   };
-  self._sendDataFrame = function (data) {
+  self._sendDataFrame = function(data) {
     const frame = composeFrame(data);
-    return socket.write(frame);
+    try {
+      socket.write(frame);
+    } catch (e) {
+      self.emit('error', e);
+    }
   };
+
   return self;
 };
-
 
 module.exports = Client;
