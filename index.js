@@ -279,8 +279,8 @@ const Client = function(socketFile) {
     });
   };
   self._sendDataFrame = function(data) {
-    const frame = composeFrame(data);
     try {
+      let frame = composeFrame(data);
       socket.write(frame);
     } catch (e) {
       self.emit('error', e);
