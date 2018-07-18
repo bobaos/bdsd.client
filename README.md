@@ -5,6 +5,7 @@ Coming soon.
 ## Usage
 
 In terminal:
+
 ```bash
 npm install --save bdsd.client
 ```
@@ -19,48 +20,46 @@ const BdsdClient = require('bdsd.client');
 // process.env['XDG_RUNTIME_DIR'] + '/bdsd.sock'. Usually it is /run/user/1000/bdsd.sock.
 let myClient = BdsdClient();
 
-
 // Register listener for broadcasted values
 myClient.on('value', data => {
   console.log('broadcasted value', data);
 });
 
-
-// Listener for connected event. 
+// Listener for connected event.
 // Triggers when client connects and receive 'bus connected' notification
 myClient.on('connect', _ => {
   console.log('client connected');
-  
+
   // get list of all datapoints
   myClient
     .getDatapoints()
     .then(console.log)
     .catch(console.log);
-  
+
   // get description for one dp
   myClient
     .getDescription(1)
     .then(console.log)
     .catch(console.log);
-  
+
   // get datapoint value
   myClient
     .getValue(1)
     .then(console.log)
     .catch(console.log);
-  
+
   // send read request to bus
   myClient
     .readValue(1)
     .then(console.log)
     .catch(console.log);
-  
+
   // set datapoint value and send to bus
   myClient
     .setValue(1, true)
     .then(console.log)
     .catch(console.log);
- 
+
   // set programming mode to 1
   myClient
     .setProgrammingMode(1)
@@ -71,7 +70,7 @@ myClient.on('connect', _ => {
   myClient
     .getStoredValue(1)
     .then(console.log)
-    .catch(console.log)
+    .catch(console.log);
 
   // read multiple values
   myClient
@@ -81,16 +80,13 @@ myClient.on('connect', _ => {
 
   // set multiple values
   myClient
-    .setValues([
-      { id: 1, value: true},
-      { id: 2, value: 1}
-    ])
+    .setValues([{id: 1, value: true}, {id: 2, value: 1}])
     .then(console.log)
     .catch(console.log);
 });
 
 // error handling
-myClient.on('error', err =>  {
+myClient.on('error', err => {
   console.log(err.message);
 });
 ```
@@ -163,3 +159,9 @@ For **`setValue/readValue`** you will receive object with field id
 **`readValues`** accepts array of datapoints. It will send only one request to BAOS module and BAOS will send multiple read requests to KNX bus.
 
 **`setValues`** accepts array of objects: `[{id: 1, value: true}, {id: 2, value: 23.5}]`
+
+## Support me
+
+You can send me a beer by PayPal
+
+[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/shabunin)
